@@ -1,7 +1,7 @@
 # create-ecr-repository-action [![ts](https://github.com/int128/create-ecr-repository-action/actions/workflows/ts.yml/badge.svg)](https://github.com/int128/create-ecr-repository-action/actions/workflows/ts.yml)
 
 This is a GitHub Action to create a repository into Amazon ECR or ECR Public registry if it does not exist.
-It can put a lifecycle policy to the repository for cost saving.
+It can put a lifecycle policy to the repository for cost saving and a repository policy for cross account access.
 
 
 ## Getting Started
@@ -32,6 +32,20 @@ To create a repository with a lifecycle policy:
 ```
 
 If the repository exists, this action just puts the lifecycle policy.
+
+### Put a permission policy
+
+To create a repository with a permission policy:
+
+```yaml
+      - uses: int128/create-ecr-repository-action@v1
+        with:
+          repository: hello-world
+          permission-policy: config/permission-policy.json
+```
+
+If the repository exists, this action just puts the permission policy.
+
 
 
 ### Create into ECR Public
@@ -79,6 +93,7 @@ Do not use `main` branch because it does not contain `dist` files.
 | `public` | `false` | Set `true` to create into ECR Public registry
 | `repository` | (required) | Repository name to create
 | `lifecycle-policy` | - | Path to a file of lifecycle policy for the repository
+| `permission-policy`  | Path to a file of permission policy for the repository (optional)
 
 
 ## Outputs

@@ -7,9 +7,16 @@ inputs:
     required: true
     description: set true to create into ECR Public registry
     default: 'false'
+  delete:
+    required: true
+    description: set true to delete ECR
+    default: 'false'
   repository:
     required: true
     description: repository name to create
+  repo-policy:
+    required: false
+    description: path to repo policy file of the repository (optional)
   lifecycle-policy:
     required: false
     description: path to lifecycle policy file of the repository (optional)
