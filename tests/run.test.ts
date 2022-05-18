@@ -18,7 +18,7 @@ const mocks = {
   ecrPublic: mockClient(ecrPublic.ECRPUBLICClient),
 }
 
-test('ecr', async () => {
+test('lifecycle', async () => {
   mocks.ecr.on(ecr.DescribeRepositoriesCommand).resolves({
     repositories: [
       {
@@ -33,6 +33,26 @@ test('ecr', async () => {
   await run({
     repository: 'foo/bar',
     lifecyclePolicy: `${__dirname}/fixtures/lifecycle-policy.json`,
+    public: false,
+  })
+  expect(setOutputMock).toBeCalledWith('repository-uri', '123456789012.dkr.ecr.ap-northeast-1.amazonaws.com/foobar')
+})
+
+test('repo policy', async () => {
+  mocks.ecr.on(ecr.DescribeRepositoriesCommand).resolves({
+    repositories: [
+      {
+        repositoryName: 'foobar',
+        repositoryUri: '123456789012.dkr.ecr.ap-northeast-1.amazonaws.com/foobar',
+      },
+    ],
+  })
+  mocks.ecr.on(ecr.SetRepositoryPolicyCommand).resolves({
+    repositoryName: 'foobar',
+  })
+  await run({
+    repository: 'foo/bar',
+    repoPolicy: `${__dirname}/fixtures/repo-policy.json`,
     public: false,
   })
   expect(setOutputMock).toBeCalledWith('repository-uri', '123456789012.dkr.ecr.ap-northeast-1.amazonaws.com/foobar')

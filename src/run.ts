@@ -4,10 +4,10 @@ import { runForECRPublic } from './ecr_public'
 
 interface Inputs {
   public: boolean
-  deleteRepo: boolean
+  deleteRepo?: boolean
   repository: string
-  lifecyclePolicy: string
-  repoPolicy: string
+  lifecyclePolicy?: string
+  repoPolicy?: string
 }
 
 export const run = async (inputs: Inputs): Promise<void> => {

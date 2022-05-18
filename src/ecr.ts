@@ -32,7 +32,7 @@ export const runForECR = async (inputs: Inputs): Promise<Outputs> => {
     if (repository.repositoryUri === undefined) {
       throw new Error('unexpected response: repositoryUri === undefined')
     }
-  
+
     const lifecyclePolicy = inputs.lifecyclePolicy
     if (lifecyclePolicy !== undefined) {
       await core.group(
@@ -40,7 +40,7 @@ export const runForECR = async (inputs: Inputs): Promise<Outputs> => {
         async () => await putLifecyclePolicy(client, inputs.repository, lifecyclePolicy)
       )
     }
-  
+
     const repoPolicy = inputs.repoPolicy
     if (repoPolicy !== undefined) {
       await core.group(
@@ -52,7 +52,7 @@ export const runForECR = async (inputs: Inputs): Promise<Outputs> => {
       repositoryUri: repository.repositoryUri,
     }
   } else {
-    const repository = await core.group(
+    await core.group(
       `Create repository ${inputs.repository} if not exist`,
       async () => await deleteRepositoryIfExist(client, inputs.repository)
     )
@@ -87,27 +87,23 @@ export const runForECR = async (inputs: Inputs): Promise<Outputs> => {
 }
 
 const deleteRepositoryIfExist = async (client: ECRClient, name: string): Promise<Repository> => {
-  try {
-    const describe = await client.send(new DescribeRepositoriesCommand({ repositoryNames: [name] }))
-    if (describe.repositories === undefined) {
-      throw new Error(`unexpected response describe.repositories was undefined`)
-    }
-    if (describe.repositories.length !== 1) {
-      throw new Error(`unexpected response describe.repositories = ${JSON.stringify(describe.repositories)}`)
-    }
-    const found = describe.repositories[0]
-    if (found.repositoryUri === undefined) {
-      throw new Error(`unexpected response repositoryUri was undefined`)
-    }
-    core.info(`repository ${found.repositoryUri} found`)
-    const repoDeleted = await client.send(new DeleteRepositoryCommand({ repositoryName: name }))
-    if (repoDeleted === undefined) {
-      throw new Error(`unexpected response repositoryUri was undefined`)
-    } else {
-      return repoDeleted
-    }
-  } catch (error) {
-    throw error
+  const describe = await client.send(new DescribeRepositoriesCommand({ repositoryNames: [name] }))
+  if (describe.repositories === undefined) {
+    throw new Error(`unexpected response describe.repositories was undefined`)
+  }
+  if (describe.repositories.length !== 1) {
+    throw new Error(`unexpected response describe.repositories = ${JSON.stringify(describe.repositories)}`)
+  }
+  const found = describe.repositories[0]
+  if (found.repositoryUri === undefined) {
+    throw new Error(`unexpected response repositoryUri was undefined`)
+  }
+  core.info(`repository ${found.repositoryUri} found`)
+  const repoDeleted = await client.send(new DeleteRepositoryCommand({ repositoryName: name }))
+  if (repoDeleted === undefined) {
+    throw new Error(`unexpected response repositoryUri was undefined`)
+  } else {
+    return found
   }
 }
 
@@ -154,9 +150,9 @@ const putLifecyclePolicy = async (client: ECRClient, repositoryName: string, pat
 }
 
 const putRepoPolicy = async (client: ECRClient, repositoryName: string, path: string): Promise<void> => {
-  const repoPolicyText = await fs.readFile(path, { encoding: 'utf-8' })
+  const policyText = await fs.readFile(path, { encoding: 'utf-8' })
   core.debug(`putting the repo policy ${path} to repository ${repositoryName}`)
 
-  await client.send(new SetRepositoryPolicyCommand({ repositoryName, repoPolicyText }))
+  await client.send(new SetRepositoryPolicyCommand({ repositoryName, policyText }))
   core.info(`successfully put repo policy ${path} to repository ${repositoryName}`)
 }

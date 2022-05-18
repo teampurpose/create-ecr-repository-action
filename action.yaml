@@ -8,7 +8,7 @@ inputs:
     description: set true to create into ECR Public registry
     default: 'false'
   delete:
-    required: true
+    required: false
     description: set true to delete ECR
     default: 'false'
   repository:

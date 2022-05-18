@@ -1,0 +1,26 @@
+{
+  "Version": "2008-10-17",
+  "Statement": [
+    {
+      "Sid": "new statement",
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": [
+          "arn:aws:iam::779907190354:root",
+          "arn:aws:iam::967607805018:root",
+          "arn:aws:iam::911550933763:root",
+          "arn:aws:iam::561045881690:root"
+        ]
+      },
+      "Action": [
+        "ecr:BatchCheckLayerAvailability",
+        "ecr:BatchGetImage",
+        "ecr:DescribeImages",
+        "ecr:DescribeRepositories",
+        "ecr:GetDownloadUrlForLayer",
+        "ecr:GetRepositoryPolicy",
+        "ecr:ListImages"
+      ]
+    }
+  ]
+}
